@@ -32,14 +32,14 @@ jobs:
 
       # SLSA Provenance generation step
       - name: Generate SLSA Provenance
-        uses: slsa-framework/slsa-github-generator@v1
+        uses: slsa-framework/slsa-github-generator@latest  # Use latest or a specific version
         with:
           step: 'build'
           build_command: 'cd controlenginefe && npm run build'  # Updated command
 
       # SLSA Build Verification step
       - name: Verify SLSA Provenance
-        uses: slsa-framework/slsa-verifier@v1
+        uses: slsa-framework/slsa-verifier@latest  # Use latest or a specific version
         with:
           step: 'build'
           artifact_path: 'controlenginefe/build'  # Updated path
