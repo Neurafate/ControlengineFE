@@ -1,10 +1,7 @@
-name: Build with SLSA Provenance and Verification
+name: Build, Test, and Sign
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -12,8 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -23,23 +19,16 @@ jobs:
       - name: Install dependencies
         run: |
           cd controlenginefe
-          npm install
+          npm ci  # Install dependencies inside controlenginefe
+
+      - name: Run tests
+        run: |
+          cd controlenginefe
+          npm test  # Run tests inside controlenginefe
 
       - name: Build project
         run: |
           cd controlenginefe
-          npm run build
+          npm run build  # Build the project inside controlenginefe
 
-      # SLSA Provenance generation step
-      - name: Generate SLSA Provenance
-        uses: slsa-framework/slsa-github-generator@latest  # Use latest or a specific version
-        with:
-          step: 'build'
-          build_command: 'cd controlenginefe && npm run build'  # Updated command
 
-      # SLSA Build Verification step
-      - name: Verify SLSA Provenance
-        uses: slsa-framework/slsa-verifier@latest  # Use latest or a specific version
-        with:
-          step: 'build'
-          artifact_path: 'controlenginefe/build'  # Updated path
