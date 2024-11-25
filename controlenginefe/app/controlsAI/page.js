@@ -12,6 +12,8 @@ import UploadIcon from "@mui/icons-material/Upload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/system";
 import { Modal, Table } from "antd";
+import InfoIcon from "@mui/icons-material/Info";
+import Tooltip from "@mui/material/Tooltip";
 
 export default function Tool1Page() {
   const [file1, setFile1] = useState(null);
@@ -84,7 +86,11 @@ export default function Tool1Page() {
   const columns = [
     { title: "Domain", dataIndex: "Domain", key: "Domain" },
     { title: "Sub-Domain", dataIndex: "Sub-Domain", key: "Sub-Domain" },
-    { title: "Control from User Org Framework", dataIndex: "Control", key: "Control" },
+    {
+      title: "Control from User Org Framework",
+      dataIndex: "Control",
+      key: "Control",
+    },
     {
       title: "Controls from Service Org that match",
       dataIndex: "Controls from F2 that match",
@@ -94,7 +100,9 @@ export default function Tool1Page() {
       title: "Similarity Scores",
       dataIndex: "Similarity Scores",
       key: "Similarity Scores",
-      sorter: (a, b) => parseFloat(a["Similarity Scores"] || 0) - parseFloat(b["Similarity Scores"] || 0),
+      sorter: (a, b) =>
+        parseFloat(a["Similarity Scores"] || 0) -
+        parseFloat(b["Similarity Scores"] || 0),
       defaultSortOrder: "descend",
     },
   ];
@@ -220,15 +228,32 @@ export default function Tool1Page() {
               gap: "1rem",
             }}
           >
+            <Typography variant="h9">Top-K Value:</Typography>
+            <Tooltip
+              title={
+                <>
+                  Higher value shows more potential matches but might include
+                  less relevant ones.
+                  <br />
+                  Lower value focuses on more relevant matches.
+                </>
+              }
+            >
+              <InfoIcon sx={{ cursor: "pointer" }} />
+            </Tooltip>
             <Button
               variant="contained"
               onClick={handleTopKDecrease}
               sx={{
-                backgroundColor: "yellow",
-                color: "black",
+                backgroundColor: "#333333",
+                color: "#fff",
                 "&:hover": {
-                  backgroundColor: "darkyellow",
+                  backgroundColor: "#FFE600",
+                  color: "black",
+                  transform: "scale(1.05)",
                 },
+                padding: "0",
+                // Ensures the button is small
               }}
             >
               -
@@ -238,11 +263,15 @@ export default function Tool1Page() {
               variant="contained"
               onClick={handleTopKIncrease}
               sx={{
-                backgroundColor: "yellow",
-                color: "black",
+                backgroundColor: "#333333",
+                color: "#fff",
                 "&:hover": {
-                  backgroundColor: "darkyellow",
+                  backgroundColor: "#FFE600",
+                  color: "black",
+                  transform: "scale(1.05)",
                 },
+                padding: "0",
+                // Ensures the button is small
               }}
             >
               +
