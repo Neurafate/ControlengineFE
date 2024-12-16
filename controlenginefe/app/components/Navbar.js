@@ -10,8 +10,8 @@ const Navbar = () => {
     <nav className={styles.navbar}>
       <div className={styles.links}>
         <Link href="/" className={pathname === '/' ? `${styles.activeLink} ${styles.link}` : styles.link}>Home</Link>
-        <Link href="/controlsAI" className={pathname === '/controlsAI' ? `${styles.activeLink} ${styles.link}` : styles.link}>Frameworks Mapper</Link>
-        <Link href="/RAG" className={pathname === '/RAG' ? `${styles.activeLink} ${styles.link}` : styles.link}>RAG Engine </Link>
+        <Link href="/frameworks" className={pathname === '/frameworks' ? `${styles.activeLink} ${styles.link}` : styles.link}>Frameworks Mapper</Link>
+        <Link href="/SOC" className={pathname === '/SOC' ? `${styles.activeLink} ${styles.link}` : styles.link}>SOC Mapper </Link>
         
       </div>
       
