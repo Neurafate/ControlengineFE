@@ -113,6 +113,7 @@ export default function Tool2Page() {
       setIsModalVisible(true);
     } catch (error) {
       console.error("Error:", error);
+      console.log(error)
       alert("An error occurred while processing files.");
     } finally {
       setLoading(false);
