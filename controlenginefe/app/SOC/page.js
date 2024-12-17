@@ -14,6 +14,7 @@ import { styled } from "@mui/system";
 import { Modal, Table, Input } from "antd";
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/Info";
+
 export default function Tool2Page() {
   const [socFile, setSocFile] = useState(null);
   const [frameworkFile, setFrameworkFile] = useState(null);
@@ -25,60 +26,47 @@ export default function Tool2Page() {
   const [processingTime, setProcessingTime] = useState("");
   const [resultData, setResultData] = useState([]);
 
-  // Dummy data for testing
-  const dummyData = [
-    {
-      "Control ID": "CC 1.1",
-      "Control Description": "The entity defines and communicates its security requirements for vendors and business partners.",
-      "Evidence Found": "Section 3.2 - Vendor Management: The organization maintains a comprehensive vendor management program that includes security requirements...",
-      "Page Number": 15,
-      "Confidence Score": 0.89
-    },
-    {
-      "Control ID": "CC 2.3",
-      "Control Description": "Security policies and procedures are established and maintained.",
-      "Evidence Found": "Section 4.1 - Security Policies: Company XYZ maintains documented security policies that are reviewed annually...",
-      "Page Number": 22,
-      "Confidence Score": 0.95
-    },
-    {
-      "Control ID": "CC 3.1",
-      "Control Description": "Access to systems and data is restricted to authorized personnel.",
-      "Evidence Found": "Section 5.3 - Access Control: Access to systems and data is restricted through role-based access controls...",
-      "Page Number": 30,
-      "Confidence Score": 0.92
-    }
-  ];
-
   const columns = [
     {
-      title: "Control ID",
-      dataIndex: "Control ID",
-      key: "Control ID",
-      sorter: (a, b) => a["Control ID"].localeCompare(b["Control ID"])
+      title: "Sr. No.",
+      dataIndex: "Sr. No.",
+      key: "Sr. No.",
+      sorter: (a, b) => a["Sr. No."] - b["Sr. No."]
     },
     {
-      title: "Control Description",
-      dataIndex: "Control Description",
-      key: "Control Description"
+      title: "User Org Control Domain",
+      dataIndex: "User Org Control Domain",
+      key: "User Org Control Domain"
     },
     {
-      title: "Evidence Found",
-      dataIndex: "Evidence Found",
-      key: "Evidence Found"
+      title: "User Org Control Sub-Domain",
+      dataIndex: "User Org Control Sub-Domain",
+      key: "User Org Control Sub-Domain"
     },
     {
-      title: "Page Number",
-      dataIndex: "Page Number",
-      key: "Page Number",
-      sorter: (a, b) => a["Page Number"] - b["Page Number"]
+      title: "User Org Control Statement",
+      dataIndex: "User Org Control Statement",
+      key: "User Org Control Statement"
     },
     {
-      title: "Confidence Score",
-      dataIndex: "Confidence Score",
-      key: "Confidence Score",
-      sorter: (a, b) => a["Confidence Score"] - b["Confidence Score"],
-      render: (score) => `${(score * 100).toFixed(1)}%`
+      title: "Service Org Control IDs",
+      dataIndex: "Service Org Control IDs",
+      key: "Service Org Control IDs"
+    },
+    {
+      title: "Service Org Controls",
+      dataIndex: "Service Org Controls",
+      key: "Service Org Controls"
+    },
+    {
+      title: "Llama Analysis",
+      dataIndex: "Llama Analysis",
+      key: "Llama Analysis"
+    },
+    {
+      title: "Control Status",
+      dataIndex: "Control Status",
+      key: "Control Status"
     }
   ];
 
@@ -100,14 +88,14 @@ export default function Tool2Page() {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append("soc", socFile);
-    formData.append("framework", frameworkFile);
-    formData.append("startPage", startPage);
-    formData.append("endPage", endPage);
-    formData.append("controlId", controlId);
+    formData.append("pdf_file", socFile);
+    formData.append("excel_file", frameworkFile);
+    formData.append("start_page", startPage);
+    formData.append("end_page", endPage);
+    formData.append("control_id", controlId);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/process-rag", {
+      const response = await fetch("http://127.0.0.1:5000/process_all", {
         method: "POST",
         body: formData,
       });
@@ -118,20 +106,17 @@ export default function Tool2Page() {
 
       const result = await response.json();
       console.log(result);
-      // Handle the result as needed
+
+      // Show the resulting data in the table
+      setResultData(result.data || []);
+      setProcessingTime("Calculated processing time"); 
+      setIsModalVisible(true);
     } catch (error) {
       console.error("Error:", error);
+      alert("An error occurred while processing files.");
     } finally {
       setLoading(false);
     }
-
-    // Simulate API call delay
-    setTimeout(() => {
-      setResultData(dummyData);
-      setProcessingTime("2.3 seconds");
-      setIsModalVisible(true);
-      setLoading(false);
-    }, 2000);
   };
 
   const StyledInput = styled("input")({
@@ -193,7 +178,7 @@ export default function Tool2Page() {
               </IconButton>
             </Box>
           )}
-   
+
           {/* Page Inputs */}
           <Box sx={{ mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
@@ -201,8 +186,7 @@ export default function Tool2Page() {
               <Tooltip
                 title={
                   <>
-                   Kindly input the start and end page of the table content in the SOC Report to be mapped.
-                    
+                    Kindly input the start and end page of the table content in the SOC Report to be mapped.
                   </>
                 }
               >
@@ -239,7 +223,7 @@ export default function Tool2Page() {
               <Tooltip
                 title={
                   <>
-                    Kindly provide any control ID in the Section 4 of the SOC2 Report to be mapped.
+                    Provide any control ID from the SOC2 Report. The system will generate the regex automatically.
                   </>
                 }
               >
