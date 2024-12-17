@@ -252,7 +252,7 @@ export default function Tool2Page() {
                 onChange={(e) => setControlId(e.target.value)}
                 style={{ width: "100%" }}
               />
-              <AntTooltip title="Provide any control ID from the SOC2 Report. The system will generate the regex automatically.">
+              <AntTooltip title="Provide any control ID from the SOC2 Report.">
                 <InfoIcon sx={{ cursor: "pointer" }} />
               </AntTooltip>
             </Box>
