@@ -1,5 +1,6 @@
+// page.js
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Button,
   Container,
@@ -7,14 +8,19 @@ import {
   Typography,
   Box,
   IconButton,
+  LinearProgress,
 } from "@mui/material";
 import UploadIcon from "@mui/icons-material/Upload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/system";
-import { Modal, Table, Input, Tooltip as AntTooltip } from "antd";
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/Info";
+import { Modal, Table, Input } from "antd";
 import * as XLSX from "xlsx"; // For parsing Excel files
+
+const StyledInput = styled("input")({
+  display: "none",
+});
 
 export default function Tool2Page() {
   const [socFile, setSocFile] = useState(null);
@@ -26,11 +32,11 @@ export default function Tool2Page() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [processingTime, setProcessingTime] = useState("");
   const [resultData, setResultData] = useState([]);
-  const [downloadUrl, setDownloadUrl] = useState(null); // Store Excel download URL
-
-  const StyledInput = styled("input")({
-    display: "none",
-  });
+  const [downloadUrl, setDownloadUrl] = useState(null); 
+  const [progress, setProgress] = useState(0);
+  const [eta, setEta] = useState(null); // ETA in seconds
+  const [taskId, setTaskId] = useState(null);
+  const eventSourceRef = useRef(null);
 
   const handleFileChange = (e, setFile) => {
     setFile(e.target.files[0]);
@@ -48,6 +54,12 @@ export default function Tool2Page() {
     }
 
     setLoading(true);
+    setProgress(0);
+    setEta(null);
+    setTaskId(null);
+    setResultData([]);
+    setDownloadUrl(null);
+    setProcessingTime("Initializing...");
 
     const formData = new FormData();
     formData.append("pdf_file", socFile);
@@ -62,65 +74,118 @@ export default function Tool2Page() {
         body: formData,
       });
 
-      const contentType = response.headers.get("content-type");
-      console.log("Response Content-Type:", contentType);
-
       if (!response.ok) {
-        // If response is not OK, it might be JSON error or something else
+        const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
           alert(`Error: ${errorData.error}`);
         } else {
           alert("Error occurred while processing files (Non-JSON).");
         }
+        setLoading(false);
         return;
       }
 
-      // Response is OK. Check if it's Excel
-      if (
-        contentType &&
-        contentType.includes("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-      ) {
-        const blob = await response.blob();
-
-        // Create a download URL for the blob
-        const fileUrl = URL.createObjectURL(blob);
-        setDownloadUrl(fileUrl);
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          try {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: "array" });
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-            setResultData(jsonData);
-            setProcessingTime("Processing completed successfully");
-            setIsModalVisible(true);
-          } catch (parseError) {
-            console.error("Excel parse error:", parseError);
-            alert("Failed to parse the returned file as Excel.");
-          }
-        };
-        reader.readAsArrayBuffer(blob);
-      } else if (contentType && contentType.includes("application/json")) {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.error}`);
-      } else {
-        console.log("Unexpected content type:", contentType);
-        alert("Unexpected response format, not Excel or JSON.");
-      }
+      const data = await response.json();
+      const receivedTaskId = data.task_id;
+      setTaskId(receivedTaskId);
+      setProcessingTime("Task initiated. Waiting for progress updates...");
     } catch (error) {
       console.error("Fetch error:", error);
       alert("An error occurred while processing files.");
-    } finally {
       setLoading(false);
     }
   };
 
-  // Dynamically generate columns based on the returned data keys
+  useEffect(() => {
+    if (taskId) {
+      eventSourceRef.current = new EventSource(`http://127.0.0.1:5000/progress/${taskId}`);
+
+      eventSourceRef.current.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.error) {
+            alert(`Error: ${data.error}`);
+            setLoading(false);
+            setProgress(100);
+            setEta(null);
+            eventSourceRef.current.close();
+          } else {
+            setProgress(Number(data.progress.toFixed(2)));
+            setProcessingTime(data.status);
+
+            if (data.eta !== null && data.eta !== undefined && !isNaN(data.eta)) {
+              setEta(data.eta);
+            } else {
+              setEta(null);
+            }
+
+            if (data.progress >= 100) {
+              if (data.download_url) {
+                setDownloadUrl(data.download_url);
+                fetchFileAndParse(data.download_url);
+              } else {
+                setLoading(false);
+              }
+              eventSourceRef.current.close();
+            }
+          }
+        } catch (err) {
+          console.error("Error parsing SSE data:", err);
+        }
+      };
+
+      eventSourceRef.current.onerror = (err) => {
+        console.error("EventSource failed:", err);
+        alert("An error occurred while receiving progress updates.");
+        setLoading(false);
+        setProgress(100);
+        setEta(null);
+        if (eventSourceRef.current) eventSourceRef.current.close();
+      };
+
+      return () => {
+        if (eventSourceRef.current) {
+          eventSourceRef.current.close();
+        }
+      };
+    }
+  }, [taskId]);
+
+  const fetchFileAndParse = async (url) => {
+    try {
+      const excelResponse = await fetch(url);
+      const blob = await excelResponse.blob();
+      const fileUrl = URL.createObjectURL(blob);
+      setDownloadUrl(fileUrl);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: "array" });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+          setResultData(jsonData);
+          setIsModalVisible(true);
+          setLoading(false);
+          setProcessingTime("Task completed successfully.");
+        } catch (parseError) {
+          console.error("Excel parse error:", parseError);
+          alert("Failed to parse the returned file as Excel.");
+          setLoading(false);
+        }
+      };
+      reader.readAsArrayBuffer(blob);
+    } catch (err) {
+      console.error("Error fetching final Excel file:", err);
+      alert("Failed to download the final Excel file.");
+      setLoading(false);
+    }
+  };
+
   const columns =
     resultData.length > 0
       ? Object.keys(resultData[0]).map((key) => ({
@@ -128,7 +193,6 @@ export default function Tool2Page() {
           dataIndex: key,
           key: key,
           sorter: (a, b) => {
-            // Attempt a basic sort
             if (typeof a[key] === "number" && typeof b[key] === "number") {
               return a[key] - b[key];
             } else if (
@@ -139,9 +203,18 @@ export default function Tool2Page() {
             }
             return 0;
           },
-          render: (text) => text || "", // Ensure empty strings don't cause issues
+          render: (text) => text || "",
         }))
       : [];
+
+  const formatEta = (seconds) => {
+    if (seconds === null || seconds === undefined) return "Calculating...";
+    if (isNaN(seconds)) return "Calculating...";
+    if (seconds <= 0) return "Completed";
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}m ${secs}s`;
+  };
 
   return (
     <Box
@@ -167,13 +240,13 @@ export default function Tool2Page() {
           SOC Mapper
         </Typography>
         <form onSubmit={handleSubmit}>
-          {/* SOC Upload */}
           <label htmlFor="socFile">
             <StyledInput
               accept=".pdf"
               id="socFile"
               type="file"
               onChange={(e) => handleFileChange(e, setSocFile)}
+              required
             />
             <Button
               startIcon={<UploadIcon />}
@@ -206,21 +279,20 @@ export default function Tool2Page() {
             </Box>
           )}
 
-          {/* Page Inputs */}
           <Box sx={{ mb: 2 }}>
             <Box
-              sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 1 }}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                mb: 1,
+              }}
             >
               <Typography variant="body2" sx={{ mr: 1 }}>
                 Page Numbers
               </Typography>
               <Tooltip
-                title={
-                  <>
-                    Kindly input the start and end page of the table content in the SOC Report
-                    to be mapped.
-                  </>
-                }
+                title="Kindly input the start and end page of the table content in the SOC Report to be mapped."
               >
                 <InfoIcon sx={{ cursor: "pointer" }} />
               </Tooltip>
@@ -232,6 +304,8 @@ export default function Tool2Page() {
                 value={startPage}
                 onChange={(e) => setStartPage(e.target.value)}
                 style={{ width: "45%" }}
+                required
+                min={1}
               />
               <Input
                 placeholder="End Page"
@@ -239,11 +313,12 @@ export default function Tool2Page() {
                 value={endPage}
                 onChange={(e) => setEndPage(e.target.value)}
                 style={{ width: "45%" }}
+                required
+                min={1}
               />
             </Box>
           </Box>
 
-          {/* Control ID Input */}
           <Box sx={{ mb: 2 }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Input
@@ -251,20 +326,21 @@ export default function Tool2Page() {
                 value={controlId}
                 onChange={(e) => setControlId(e.target.value)}
                 style={{ width: "100%" }}
+                required
               />
-              <AntTooltip title="Provide any control ID from the SOC2 Report.">
+              <Tooltip title="Provide any control ID from the SOC2 Report.">
                 <InfoIcon sx={{ cursor: "pointer" }} />
-              </AntTooltip>
+              </Tooltip>
             </Box>
           </Box>
 
-          {/* Framework Upload */}
           <label htmlFor="frameworkFile">
             <StyledInput
               accept=".xlsx,.csv"
               id="frameworkFile"
               type="file"
               onChange={(e) => handleFileChange(e, setFrameworkFile)}
+              required
             />
             <Button
               startIcon={<UploadIcon />}
@@ -283,7 +359,12 @@ export default function Tool2Page() {
           </label>
           {frameworkFile && (
             <Box
-              sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
             >
               <Typography variant="body2">{frameworkFile.name}</Typography>
               <IconButton onClick={() => handleDeleteFile(setFrameworkFile)}>
@@ -292,7 +373,6 @@ export default function Tool2Page() {
             </Box>
           )}
 
-          {/* Process Button */}
           <Button
             type="submit"
             variant="contained"
@@ -309,14 +389,41 @@ export default function Tool2Page() {
             }}
             disabled={loading}
           >
-            {loading ? <CircularProgress size={24} /> : "Process"}
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Process"}
           </Button>
         </form>
+
+        {taskId && (
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="body1" gutterBottom>
+              Status: {processingTime}
+            </Typography>
+            <LinearProgress
+              variant="determinate"
+              value={progress}
+              sx={{
+                height: '15px',
+                borderRadius: '5px',
+                backgroundColor: '#555555',
+                '& .MuiLinearProgress-bar': {
+                  backgroundColor: '#FFD700',
+                },
+              }}
+            />
+            <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+              Progress: {progress}%
+            </Typography>
+            {eta !== null && (
+              <Typography variant="body2" color="textSecondary">
+                ETA: {formatEta(eta)}
+              </Typography>
+            )}
+          </Box>
+        )}
       </Container>
 
-      {/* Modal with AntD Table */}
       <Modal
-        title={`Results processed in ${processingTime}`}
+        title={`Processing Complete`}
         open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         width="100%"
@@ -326,7 +433,6 @@ export default function Tool2Page() {
           margin: "0 auto",
         }}
         footer={[
-          // Download button
           downloadUrl && (
             <Button
               key="download"
