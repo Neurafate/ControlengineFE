@@ -1,3 +1,5 @@
+// components/Navbar.js
+
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation"; // To get the current active path
@@ -38,6 +40,17 @@ const Navbar = () => {
           }
         >
           SOC Engine
+        </Link>
+        {/* New Link Added Below */}
+        <Link
+          href="/Parser"
+          className={
+            pathname === "/Parser"
+              ? `${styles.activeLink} ${styles.link}`
+              : styles.link
+          }
+        >
+          PDF Parser
         </Link>
       </div>
 
