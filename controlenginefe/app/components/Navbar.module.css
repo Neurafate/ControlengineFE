@@ -1,49 +1,6 @@
 /* /app/components/Navbar.module.css */
+
 .navbar {
-<<<<<<< Updated upstream
-    background-color:rgb(81, 81, 81);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    height: 80px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .links {
-    display: flex;
-    gap: 20px;
-  }
-  
-  /* Common styles for all links */
-  .link {
-    text-decoration: none;
-    color:white;
-    font-size: 18px;
-    padding: 10px 20px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    font-weight: bold; /* Make the text bold */
-  }
-  
-  /* Hover effect */
-  .link:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Active link styling */
-  .activeLink {
-    background-color: yellow;
-    color:black; /* Text color changes to white when clicked (active) */
-  }
-  
-  /* Logo styling */
-  .logo img {
-    height: 100px;
-    width: auto;
-  }
-  
-=======
   background-color: rgb(81, 81, 81);
   position: fixed; /* Makes navbar stick to the top */
   top: 0; /* Aligns to the top of the viewport */
@@ -58,7 +15,6 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000; /* Keeps navbar above other content */
 }
-
 
 /* Links container */
 .links {
@@ -88,6 +44,7 @@
   color: black; /* Text color changes for active link */
 }
 
+/* Logo container */
 .logo {
   padding-right: 60px; /* Add space between the logo and the left edge */
 }
@@ -96,9 +53,3 @@
   height: 80px;
   width: auto;
 }
-
-
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes

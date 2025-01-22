@@ -1,346 +1,3 @@
-// "use client";
-// import { useState } from "react";
-// import {
-//   Button,
-//   Container,
-//   CircularProgress,
-//   Typography,
-//   Box,
-//   IconButton,
-// } from "@mui/material";
-// import UploadIcon from "@mui/icons-material/Upload";
-// import DeleteIcon from "@mui/icons-material/Delete";
-// import { styled } from "@mui/system";
-// import { Modal, Table } from "antd";
-// import InfoIcon from "@mui/icons-material/Info";
-// import Tooltip from "@mui/material/Tooltip";
-
-// export default function Tool1Page() {
-//   const [file1, setFile1] = useState(null);
-//   const [file2, setFile2] = useState(null);
-//   const [resultData, setResultData] = useState([]); // Stores result rows
-//   const [loading, setLoading] = useState(false); // Indicates processing state
-//   const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility
-//   const [processingTime, setProcessingTime] = useState(""); // Time taken for processing
-//   const [topKValue, setTopKValue] = useState(5); // Value for Top-K matching
-
-//   const handleFileChange = (e, setFile) => {
-//     setFile(e.target.files[0]);
-//   };
-
-//   const handleDeleteFile = (setFile) => {
-//     setFile(null);
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     if (!file1 || !file2) {
-//       alert("Please upload both files");
-//       return;
-//     }
-
-//     setLoading(true);
-
-//     const formData = new FormData();
-//     formData.append("frame1", file1);
-//     formData.append("frame2", file2);
-//     formData.append("top_k", topKValue); // Send Top-K value
-
-//     try {
-//       const response = await fetch("http://127.0.0.1:5000/process", {
-//         method: "POST",
-//         body: formData,
-//       });
-
-//       if (!response.ok) {
-//         throw new Error("Error occurred while processing files");
-//       }
-
-//       const result = await response.json();
-
-//       // Update resultData and processing time
-//       setResultData(result.data);
-//       setProcessingTime(result.processing_time);
-//       setIsModalVisible(true); // Show modal with table
-//     } catch (error) {
-//       console.error("Error:", error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleDownload = () => {
-//     const link = document.createElement("a");
-//     link.href = "http://127.0.0.1:5000/download/framework1_with_results.csv";
-//     link.setAttribute("download", "framework1_with_results.csv");
-//     document.body.appendChild(link);
-//     link.click();
-//     document.body.removeChild(link);
-//   };
-
-//   const Input = styled("input")({
-//     display: "none",
-//   });
-
-//   // Define columns explicitly in the correct order
-//   const columns = [
-//     { title: "Domain", dataIndex: "Domain", key: "Domain" },
-//     { title: "Sub-Domain", dataIndex: "Sub-Domain", key: "Sub-Domain" },
-//     {
-//       title: "Control from User Org Framework",
-//       dataIndex: "Control",
-//       key: "Control",
-//     },
-//     {
-//       title: "Controls from Service Org that match",
-//       dataIndex: "Controls from F2 that match",
-//       key: "Controls from F2 that match",
-//     },
-//     {
-//       title: "Similarity Scores",
-//       dataIndex: "Similarity Scores",
-//       key: "Similarity Scores",
-//       sorter: (a, b) =>
-//         parseFloat(a["Similarity Scores"] || 0) -
-//         parseFloat(b["Similarity Scores"] || 0),
-//       defaultSortOrder: "descend",
-//     },
-//   ];
-
-//   const handleTopKIncrease = () => {
-//     setTopKValue((prev) => Math.min(prev + 1, 100)); // Max value of 100
-//   };
-
-//   const handleTopKDecrease = () => {
-//     setTopKValue((prev) => Math.max(prev - 1, 1)); // Min value of 1
-//   };
-
-//   return (
-//     <Box
-//       sx={{
-//         minHeight: "100vh",
-//         backgroundColor: "white",
-//         display: "flex",
-//         alignItems: "center",
-//         justifyContent: "center",
-//       }}
-//     >
-//       <Container
-//         sx={{
-//           backgroundColor: "#cccccc",
-//           padding: "2rem",
-//           borderRadius: "8px",
-//           boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-//           textAlign: "center",
-//         }}
-//         maxWidth="sm"
-//       >
-//         <Typography variant="h4" gutterBottom>
-//           Controls Engine
-//         </Typography>
-//         <form onSubmit={handleSubmit}>
-//           <label htmlFor="file1">
-//             <Input
-//               accept=".xlsx"
-//               id="file1"
-//               type="file"
-//               onChange={(e) => handleFileChange(e, setFile1)}
-//             />
-//             <Button
-//               startIcon={<UploadIcon />}
-//               variant="outlined"
-//               component="span"
-//               sx={{
-//                 marginBottom: "1rem",
-//                 width: "100%",
-//                 color: "#333333",
-//                 borderColor: "#333333",
-//                 "&:hover": {
-//                   borderColor: "#333333",
-//                 },
-//               }}
-//             >
-//               Upload User Org Framework
-//             </Button>
-//           </label>
-//           {file1 && (
-//             <Box
-//               sx={{
-//                 display: "flex",
-//                 alignItems: "center",
-//                 justifyContent: "space-between",
-//                 marginBottom: "1rem",
-//               }}
-//             >
-//               <Typography variant="body2">{file1.name}</Typography>
-//               <IconButton onClick={() => handleDeleteFile(setFile1)}>
-//                 <DeleteIcon />
-//               </IconButton>
-//             </Box>
-//           )}
-
-//           <label htmlFor="file2">
-//             <Input
-//               accept=".xlsx"
-//               id="file2"
-//               type="file"
-//               onChange={(e) => handleFileChange(e, setFile2)}
-//             />
-//             <Button
-//               startIcon={<UploadIcon />}
-//               variant="outlined"
-//               component="span"
-//               sx={{
-//                 marginBottom: "1rem",
-//                 width: "100%",
-//                 color: "#333333",
-//                 borderColor: "#333333",
-//                 "&:hover": {
-//                   borderColor: "#333333",
-//                 },
-//               }}
-//             >
-//               Upload Service Org Framework
-//             </Button>
-//           </label>
-//           {file2 && (
-//             <Box
-//               sx={{
-//                 display: "flex",
-//                 alignItems: "center",
-//                 justifyContent: "space-between",
-//                 marginBottom: "1rem",
-//               }}
-//             >
-//               <Typography variant="body2">{file2.name}</Typography>
-//               <IconButton onClick={() => handleDeleteFile(setFile2)}>
-//                 <DeleteIcon />
-//               </IconButton>
-//             </Box>
-//           )}
-
-//           <Box
-//             sx={{
-//               display: "flex",
-//               alignItems: "center",
-//               justifyContent: "center",
-//               marginBottom: "1rem",
-//               gap: "1rem",
-//             }}
-//           >
-//             <Typography variant="h9">Top-K Value:</Typography>
-//             <Tooltip
-//               title={
-//                 <>
-//                   Higher value shows more potential matches but might include
-//                   less relevant ones.
-//                   <br />
-//                   Lower value focuses on more relevant matches.
-//                 </>
-//               }
-//             >
-//               <InfoIcon sx={{ cursor: "pointer" }} />
-//             </Tooltip>
-//             <Button
-//               variant="contained"
-//               onClick={handleTopKDecrease}
-//               sx={{
-//                 backgroundColor: "#333333",
-//                 color: "#fff",
-//                 "&:hover": {
-//                   backgroundColor: "#FFE600",
-//                   color: "black",
-//                   transform: "scale(1.05)",
-//                 },
-//                 padding: "0",
-//                 // Ensures the button is small
-//               }}
-//             >
-//               -
-//             </Button>
-//             <Typography variant="h6">{topKValue}</Typography>
-//             <Button
-//               variant="contained"
-//               onClick={handleTopKIncrease}
-//               sx={{
-//                 backgroundColor: "#333333",
-//                 color: "#fff",
-//                 "&:hover": {
-//                   backgroundColor: "#FFE600",
-//                   color: "black",
-//                   transform: "scale(1.05)",
-//                 },
-//                 padding: "0",
-//                 // Ensures the button is small
-//               }}
-//             >
-//               +
-//             </Button>
-//           </Box>
-
-//           <Button
-//             type="submit"
-//             variant="contained"
-//             sx={{
-//               width: "100%",
-//               padding: "0.75rem",
-//               backgroundColor: "#333333",
-//               color: "#fff",
-//               "&:hover": {
-//                 backgroundColor: "#FFE600",
-//                 color: "black",
-//                 transform: "scale(1.05)",
-//               },
-//             }}
-//             disabled={loading}
-//           >
-//             {loading ? <CircularProgress size={24} /> : "Submit"}
-//           </Button>
-//         </form>
-
-//         <Modal
-//           title={`Results processed in ${processingTime}`}
-//           open={isModalVisible}
-//           onCancel={() => setIsModalVisible(false)}
-//           width="100%"
-//           height="100%"
-//           style={{
-//             top: 0,
-//             left: 0,
-//             right: 0,
-//             bottom: 0,
-//             margin: 10,
-//             borderRadius: 0,
-//             overflow: "hidden",
-//           }}
-//           footer={[
-//             <Button key="download" variant="contained" onClick={handleDownload}>
-//               Download as CSV
-//             </Button>,
-//             <Button
-//               key="close"
-//               variant="contained"
-//               color="error"
-//               onClick={() => setIsModalVisible(false)}
-//             >
-//               Close
-//             </Button>,
-//           ]}
-//         >
-//           <Table
-//             dataSource={resultData}
-//             columns={columns}
-//             pagination={false}
-//             rowKey={(record, index) => index} // Ensure unique row keys
-//             scroll={{ y: "calc(100vh - 200px)" }}
-//           />
-//         </Modal>
-//       </Container>
-//     </Box>
-//   );
-// }
-
-
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -360,23 +17,11 @@ import {
 import { styled } from "@mui/system";
 import UploadIcon from "@mui/icons-material/Upload";
 import DeleteIcon from "@mui/icons-material/Delete";
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-import { styled } from "@mui/system";
-import { Modal, Table } from "antd"; // Removed Input from here
-import { Input } from "antd"; // Added separate Input import
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline"; // For the reopen modal button
 import InfoIcon from "@mui/icons-material/Info";
 import Tooltip from "@mui/material/Tooltip";
-=======
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline"; // For the reopen modal button
-import { Modal, Table } from "antd";
+import { Modal, Table, Input } from "antd";
 import * as XLSX from "xlsx";
->>>>>>> Stashed changes
-=======
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline"; // For the reopen modal button
-import { Modal, Table } from "antd";
-import * as XLSX from "xlsx";
->>>>>>> Stashed changes
 
 // ------------------- Styled Components -------------------
 const StyledInput = styled("input")({
@@ -466,7 +111,7 @@ const HowItWorks = () => (
       </li>
       <li>
         <Typography variant="body2" sx={{ mb: 1 }}>
-          <strong>Baseline:</strong> Initiate the comparison process and monitor the progress. Download the output as an excel file to review the results.
+          <strong>Baseline:</strong> Initiate the comparison process and monitor the progress. Download the output as an Excel file to review the results.
         </Typography>
       </li>
     </ol>
@@ -490,8 +135,6 @@ export default function Tool1Page() {
   const [downloadFilename, setDownloadFilename] = useState("output.xlsx"); // To store the dynamic filename
 
   // ------------------- Helper Functions -------------------
-  // Removed formatEta since ETA is no longer used
-
   // Columns for AntD Table
   const columns = useMemo(() => {
     if (resultData.length === 0) return [];
@@ -549,21 +192,13 @@ export default function Tool1Page() {
       }
 
       const result = await response.json();
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-
-      setResultData(result.data);
-      setProcessingTime(result.processing_time);
-=======
-=======
->>>>>>> Stashed changes
       setResultData(result.data || []);
       setProcessingTime(result.processing_time || "");
 
       // Set download URL and filename from the response
       if (result.download_url) {
         // Ensure the URL is absolute
-        const url = new URL(result.download_url);
+        const url = new URL(result.download_url, window.location.origin);
         setDownloadUrl(url.href);
 
         // Extract filename from the download URL
@@ -571,10 +206,6 @@ export default function Tool1Page() {
         setDownloadFilename(filename || "output.xlsx");
       }
 
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
       setIsModalVisible(true);
     } catch (error) {
       console.error("Error:", error);
@@ -586,68 +217,6 @@ export default function Tool1Page() {
 
   // ------------------- Download Handler -------------------
   const handleDownload = () => {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    const link = document.createElement("a");
-    link.href = "http://127.0.0.1:5000/download/framework1_with_results.csv";
-    link.setAttribute("download", "framework1_with_results.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const StyledInput = styled("input")({
-    display: "none",
-  });
-
-  const columns = [
-    {
-      title: "Domain",
-      dataIndex: "Domain",
-      key: "Domain",
-      filters: [...new Set(resultData.map(item => item.Domain))].map(domain => ({
-        text: domain,
-        value: domain,
-      })),
-      onFilter: (value, record) => record.Domain === value,
-      filterSearch: true,
-      filterMode: 'tree',
-      filterMultiple: false,
-    },
-    {
-      title: "Sub-Domain",
-      dataIndex: "Sub-Domain",
-      key: "Sub-Domain",
-      filterSearch: true,
-      filterMode: 'menu',
-      filters: [...new Set(resultData.map(item => item["Sub-Domain"]))].map(subDomain => ({
-        text: subDomain,
-        value: subDomain,
-      })),
-      onFilter: (value, record) => record["Sub-Domain"] === value,
-    },
-    {
-            title: "Control from User Org Framework",
-            dataIndex: "Control",
-            key: "Control",
-          },
-          {
-            title: "Controls from Service Org that match",
-            dataIndex: "Controls from F2 that match",
-            key: "Controls from F2 that match",
-          },
-          {
-            title: "Similarity Scores",
-            dataIndex: "Similarity Scores",
-            key: "Similarity Scores",
-            sorter: (a, b) =>
-              parseFloat(a["Similarity Scores"] || 0) -
-              parseFloat(b["Similarity Scores"] || 0),
-            defaultSortOrder: "descend",
-          },
-  ];
-
-=======
     if (!downloadUrl) {
       alert("Download URL is not available.");
       return;
@@ -658,19 +227,6 @@ export default function Tool1Page() {
   };
 
   // ------------------- Top-K Handlers -------------------
->>>>>>> Stashed changes
-=======
-    if (!downloadUrl) {
-      alert("Download URL is not available.");
-      return;
-    }
-
-    // Open the download URL in a new tab
-    window.open(downloadUrl, "_blank");
-  };
-
-  // ------------------- Top-K Handlers -------------------
->>>>>>> Stashed changes
   const handleTopKIncrease = () => {
     setTopKValue((prev) => Math.min(prev + 1, 100));
   };
@@ -736,64 +292,9 @@ export default function Tool1Page() {
               textAlign: "center",
             }}
           >
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-            <Typography variant="h9">Top-K Value:</Typography>
-            <Tooltip
-              title={
-                <>
-                  Higher value shows more potential matches but might include
-                  less relevant ones.
-                  <br />
-                  Lower value focuses on more relevant matches.
-                </>
-              }
-            >
-              <InfoIcon sx={{ cursor: "pointer" }} />
-            </Tooltip>
-            <Button
-              variant="contained"
-              onClick={handleTopKDecrease}
-              sx={{
-                backgroundColor: "#333333",
-                color: "#fff",
-                "&:hover": {
-                  backgroundColor: "#FFE600",
-                  color: "black",
-                  transform: "scale(1.05)",
-                },
-                padding: "0",
-              }}
-            >
-              -
-            </Button>
-            <Typography variant="h6">{topKValue}</Typography>
-            <Button
-              variant="contained"
-              onClick={handleTopKIncrease}
-              sx={{
-                backgroundColor: "#333333",
-                color: "#fff",
-                "&:hover": {
-                  backgroundColor: "#FFE600",
-                  color: "black",
-                  transform: "scale(1.05)",
-                },
-                padding: "0",
-              }}
-            >
-              +
-            </Button>
-=======
             <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#333333" }}>
               Controls Engine
             </Typography>
->>>>>>> Stashed changes
-=======
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#333333" }}>
-              Controls Engine
-            </Typography>
->>>>>>> Stashed changes
           </Box>
 
           {/* Form */}
@@ -907,12 +408,10 @@ export default function Tool1Page() {
                       padding: "0.75rem",
                       backgroundColor: "#333333",
                       color: "#fff",
-                      textTransform: "none",
-                      fontWeight: "bold",
                       "&:hover": {
-                        backgroundColor: "#000000",
-                        color: "#333333",
-                        transform: "scale(1.02)",
+                        backgroundColor: "#FFE600",
+                        color: "black",
+                        transform: "scale(1.05)",
                       },
                     }}
                     disabled={loading}
@@ -1030,16 +529,8 @@ export default function Tool1Page() {
             margin: "0 auto",
           }}
           footer={[
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-            <Button key="download" variant="contained" onClick={handleDownload}>
-              Download as CSV
-=======
-=======
->>>>>>> Stashed changes
             <Button key="download" variant="contained" onClick={handleDownload} disabled={!downloadUrl}>
               Download Excel
->>>>>>> Stashed changes
             </Button>,
             <Button
               key="close"
@@ -1051,51 +542,30 @@ export default function Tool1Page() {
             </Button>,
           ]}
         >
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-          <Table
-            dataSource={resultData}
-            columns={columns}
-            pagination={false}
-            rowKey={(record, index) => index}
-            scroll={{ y: "calc(100vh - 200px)" }}
-            onChange={(pagination, filters, sorter) => {
-              console.log('Table parameters:', { filters, sorter });
-            }}
-          />
-=======
-=======
->>>>>>> Stashed changes
-          <Typography variant="body2" sx={{ mb: 3, color: "#555555" }}>
-            Below is a preview of the results. To view the interactive Pivot Table,
-            please download the Excel file.
-          </Typography>
-          {resultData.length > 0 ? (
-            <>
-              <Table
-                dataSource={resultData}
-                columns={columns}
-                pagination={{ pageSize: 10 }}
-                rowKey={(record, index) => index}
-                scroll={{ y: "calc(100vh - 300px)", x: "100%" }}
-                bordered
-              />
-            </>
-          ) : (
-            <Typography variant="body2" sx={{ color: "#777777" }}>
-              No data available to display.
+          <div style={{ maxHeight: "70vh", overflowY: "auto", paddingRight: "8px" }}>
+            <Typography variant="body2" sx={{ mb: 3, color: "#555555" }}>
+              Below is a preview of the results. To view the interactive Pivot Table,
+              please download the Excel file.
             </Typography>
-          )}
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+            {resultData.length > 0 ? (
+              <>
+                <Table
+                  dataSource={resultData}
+                  columns={columns}
+                  pagination={{ pageSize: 10 }}
+                  rowKey={(record, index) => index}
+                  scroll={{ y: "calc(70vh - 300px)", x: "100%" }}
+                  bordered
+                />
+              </>
+            ) : (
+              <Typography variant="body2" sx={{ color: "#777777" }}>
+                No data available to display.
+              </Typography>
+            )}
+          </div>
         </Modal>
       </Box>
     </Box>
   );
 }
-
-
-
-

@@ -1,15 +1,6 @@
 "use client";
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-import { useState } from "react";
-=======
 
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
->>>>>>> Stashed changes
-=======
-
-import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
->>>>>>> Stashed changes
 import {
   Button,
   Container,
@@ -17,8 +8,6 @@ import {
   Typography,
   Box,
   IconButton,
-<<<<<<< Updated upstream
-=======
   LinearProgress,
   Radio,
   RadioGroup,
@@ -29,107 +18,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 } from "@mui/material";
 import { styled } from "@mui/system";
 import UploadIcon from "@mui/icons-material/Upload";
 import DeleteIcon from "@mui/icons-material/Delete";
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-import { styled } from "@mui/system";
-import { Modal, Table, Input } from "antd";
-import Tooltip from "@mui/material/Tooltip";
-import InfoIcon from "@mui/icons-material/Info";
-export default function Tool2Page() {
-  const [socFile, setSocFile] = useState(null);
-  const [frameworkFile, setFrameworkFile] = useState(null);
-  const [startPage, setStartPage] = useState("");
-  const [endPage, setEndPage] = useState("");
-  const [controlId, setControlId] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [processingTime, setProcessingTime] = useState("");
-  const [resultData, setResultData] = useState([]);
-
-  // Dummy data for testing
-  const dummyData = [
-    {
-      "Control ID": "CC 1.1",
-      "Control Description": "The entity defines and communicates its security requirements for vendors and business partners.",
-      "Evidence Found": "Section 3.2 - Vendor Management: The organization maintains a comprehensive vendor management program that includes security requirements...",
-      "Page Number": 15,
-      "Confidence Score": 0.89
-    },
-    {
-      "Control ID": "CC 2.3",
-      "Control Description": "Security policies and procedures are established and maintained.",
-      "Evidence Found": "Section 4.1 - Security Policies: Company XYZ maintains documented security policies that are reviewed annually...",
-      "Page Number": 22,
-      "Confidence Score": 0.95
-    },
-    {
-      "Control ID": "CC 3.1",
-      "Control Description": "Access to systems and data is restricted to authorized personnel.",
-      "Evidence Found": "Section 5.3 - Access Control: Access to systems and data is restricted through role-based access controls...",
-      "Page Number": 30,
-      "Confidence Score": 0.92
-    }
-  ];
-
-  const columns = [
-    {
-      title: "Control ID",
-      dataIndex: "Control ID",
-      key: "Control ID",
-      sorter: (a, b) => a["Control ID"].localeCompare(b["Control ID"])
-    },
-    {
-      title: "Control Description",
-      dataIndex: "Control Description",
-      key: "Control Description"
-    },
-    {
-      title: "Evidence Found",
-      dataIndex: "Evidence Found",
-      key: "Evidence Found"
-    },
-    {
-      title: "Page Number",
-      dataIndex: "Page Number",
-      key: "Page Number",
-      sorter: (a, b) => a["Page Number"] - b["Page Number"]
-    },
-    {
-      title: "Confidence Score",
-      dataIndex: "Confidence Score",
-      key: "Confidence Score",
-      sorter: (a, b) => a["Confidence Score"] - b["Confidence Score"],
-      render: (score) => `${(score * 100).toFixed(1)}%`
-    }
-  ];
-=======
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline"; // For the reopen modal button
-import { Modal, Table, Input } from "antd";
-import * as XLSX from "xlsx";
-
-// ------------------- Styled Components -------------------
-const StyledInput = styled("input")({
-  display: "none",
-});
-
-const YellowRadio = styled(Radio)({
-  color: "#FFD700",
-  "&.Mui-checked": {
-    color: "#FFD700",
-  },
-});
->>>>>>> Stashed changes
-
-=======
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline"; // For the reopen modal button
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Modal, Table, Input } from "antd";
 import * as XLSX from "xlsx";
 
@@ -145,7 +38,6 @@ const YellowRadio = styled(Radio)({
   },
 });
 
->>>>>>> Stashed changes
 // ------------------- Reusable Components -------------------
 /**
  * FileUpload Component
@@ -355,8 +247,6 @@ export default function Tool2Page() {
 
     // Reset states before sending the request
     setLoading(true);
-<<<<<<< Updated upstream
-=======
     setProgress(0);
     setEta(null);
     setTaskId(null);
@@ -365,23 +255,9 @@ export default function Tool2Page() {
     setProcessingTime("Initializing...");
     setTotalTime(null); // Reset total time
     setStartTime(Date.now()); // Set the start time
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 
     // Build form data
     const formData = new FormData();
-<<<<<<< Updated upstream
-    formData.append("soc", socFile);
-    formData.append("framework", frameworkFile);
-    formData.append("startPage", startPage);
-    formData.append("endPage", endPage);
-    formData.append("controlId", controlId);
-
-    try {
-      const response = await fetch("http://127.0.0.1:5000/process-rag", {
-=======
     formData.append("pdf_file", socFile);
     formData.append("excel_file", frameworkFile);
     formData.append("start_page", startPage);
@@ -392,20 +268,11 @@ export default function Tool2Page() {
     try {
       // Send POST request
       const response = await fetch("http://127.0.0.1:5000/process_all", {
->>>>>>> Stashed changes
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-<<<<<<< Updated upstream
-        throw new Error("Error occurred while processing files");
-      }
-
-      const result = await response.json();
-      console.log(result);
-      // Handle the result as needed
-=======
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
@@ -423,24 +290,15 @@ export default function Tool2Page() {
       const receivedTaskId = data.task_id;
       setTaskId(receivedTaskId);
       setProcessingTime("Task initiated. Waiting for progress updates...");
->>>>>>> Stashed changes
     } catch (error) {
       console.error("Error:", error);
+      alert("An unexpected error occurred.");
     } finally {
       setLoading(false);
       setStartTime(null); // Reset start time on error
     }
+  };
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    // Simulate API call delay
-    setTimeout(() => {
-      setResultData(dummyData);
-      setProcessingTime("2.3 seconds");
-      setIsModalVisible(true);
-=======
-=======
->>>>>>> Stashed changes
   // ------------------- SSE for Progress Updates -------------------
   useEffect(() => {
     if (taskId) {
@@ -575,59 +433,10 @@ export default function Tool2Page() {
       alert(
         "Task finished, but could not parse the returned .xlsx. Please open it in Excel."
       );
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
       setLoading(false);
-    }, 2000);
-  };
-
-<<<<<<< Updated upstream
-  const StyledInput = styled("input")({
-    display: "none",
-  });
-=======
-  // ------------------- Handle Cancel -------------------
-  const handleCancel = async () => {
-    if (!taskId) return; // Ensure we have a valid taskId
-
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/cancel_task/${taskId}`, {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        alert(`Error cancelling task: ${errorData.error}`);
-        return;
-      }
-
-      const data = await response.json();
-      console.log(data.message);
-    } catch (error) {
-      console.error("Error cancelling the task:", error);
-      alert("An error occurred while cancelling the task.");
-    }
-
-    // Locally reset state on the frontend
-    setLoading(false);
-    setProgress(0);
-    setEta(null);
-    setTaskId(null);
-    setProcessingTime("Task cancelled.");
-    setDownloadUrl(null);
-    setResultData([]);
-    setTotalTime(null); // Reset total time on cancel
-    setStartTime(null); // Reset start time on cancel
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
     }
   };
->>>>>>> Stashed changes
 
-<<<<<<< Updated upstream
-=======
   // ------------------- Handle Cancel -------------------
   const handleCancel = async () => {
     if (!taskId) return; // Ensure we have a valid taskId
@@ -665,7 +474,16 @@ export default function Tool2Page() {
     }
   };
 
->>>>>>> Stashed changes
+  // ------------------- Handle File Change -------------------
+  const handleFileChange = (e, setFile) => {
+    setFile(e.target.files[0]);
+  };
+
+  // ------------------- Handle Delete File -------------------
+  const handleDeleteFile = (setFile) => {
+    setFile(null);
+  };
+
   // ------------------- Render -------------------
   return (
     <Box
@@ -703,151 +521,18 @@ export default function Tool2Page() {
           paddingY: "2rem",
         }}
       >
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        <Typography variant="h4" gutterBottom>
-          SOC Mapper
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          {/* SOC Upload */}
-          <label htmlFor="socFile">
-            <StyledInput
-              accept=".pdf"
-              id="socFile"
-              type="file"
-              onChange={(e) => handleFileChange(e, setSocFile)}
-            />
-            <Button
-              startIcon={<UploadIcon />}
-              variant="outlined"
-              component="span"
-              sx={{
-                marginBottom: "1rem",
-                width: "100%",
-                color: "#333333",
-                borderColor: "#333333",
-                "&:hover": { borderColor: "#333333" },
-              }}
-            >
-              Upload SOC
-            </Button>
-          </label>
-          {socFile && (
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
-              <Typography variant="body2">{socFile.name}</Typography>
-              <IconButton onClick={() => handleDeleteFile(setSocFile)}>
-                <DeleteIcon />
-              </IconButton>
-            </Box>
-          )}
-   
-          {/* Page Inputs */}
-          <Box sx={{ mb: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
-              <Typography variant="body2" sx={{ mr: 1 }}>Page Numbers</Typography>
-              <Tooltip
-                title={
-                  <>
-                   Kindly input the start and end page of the table content in the SOC Report to be mapped.
-                    
-                  </>
-                }
-              >
-                <InfoIcon sx={{ cursor: "pointer" }} />
-              </Tooltip>
-            </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-              <Input
-                placeholder="Start Page"
-                type="number"
-                value={startPage}
-                onChange={(e) => setStartPage(e.target.value)}
-                style={{ width: '45%' }}
-              />
-              <Input
-                placeholder="End Page"
-                type="number"
-                value={endPage}
-                onChange={(e) => setEndPage(e.target.value)}
-                style={{ width: '45%' }}
-              />
-            </Box>
-          </Box>
-
-          {/* Control ID Input */}
-          <Box sx={{ mb: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Input
-                placeholder="Control ID (Eg. CC 1.2)"
-                value={controlId}
-                onChange={(e) => setControlId(e.target.value)}
-                style={{ width: '100%' }}
-              />
-              <Tooltip
-                title={
-                  <>
-                    Kindly provide any control ID in the Section 4 of the SOC2 Report to be mapped.
-                  </>
-                }
-              >
-                <InfoIcon sx={{ cursor: "pointer" }} />
-              </Tooltip>
-            </Box>
-          </Box>
-
-          {/* Framework Upload */}
-          <label htmlFor="frameworkFile">
-            <StyledInput
-              accept=".xlsx,.csv"
-              id="frameworkFile"
-              type="file"
-              onChange={(e) => handleFileChange(e, setFrameworkFile)}
-            />
-            <Button
-              startIcon={<UploadIcon />}
-              variant="outlined"
-              component="span"
-              sx={{
-                marginBottom: "1rem",
-                width: "100%",
-                color: "#333333",
-                borderColor: "#333333",
-                "&:hover": { borderColor: "#333333" },
-              }}
-            >
-              Upload Framework
-            </Button>
-          </label>
-          {frameworkFile && (
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
-              <Typography variant="body2">{frameworkFile.name}</Typography>
-              <IconButton onClick={() => handleDeleteFile(setFrameworkFile)}>
-                <DeleteIcon />
-              </IconButton>
-            </Box>
-          )}
-
-          {/* Process Button */}
-          <Button
-            type="submit"
-            variant="contained"
-=======
         <Container
->>>>>>> Stashed changes
-=======
-        <Container
->>>>>>> Stashed changes
-            sx={{
-              backgroundColor: "rgba(255, 255, 255, 0.95)", // Slightly transparent to blend with background
-              marginTop: "15rem", // Add top margin to avoid overlapping with navbar
-              paddingTop: "3rem",
-              paddingLeft: "3rem",
-              paddingRight: "3rem",
-              paddingBottom: "3rem",
-              borderRadius: "12px",
-              boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-              maxWidth: "900px",
-            }}
+          sx={{
+            backgroundColor: "rgba(255, 255, 255, 0.95)", // Slightly transparent to blend with background
+            marginTop: "15rem", // Add top margin to avoid overlapping with navbar
+            paddingTop: "3rem",
+            paddingLeft: "3rem",
+            paddingRight: "3rem",
+            paddingBottom: "3rem",
+            borderRadius: "12px",
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+            maxWidth: "900px",
+          }}
         >
           {/* Heading Box */}
           <Box
@@ -859,44 +544,6 @@ export default function Tool2Page() {
               textAlign: "center",
             }}
           >
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-            {loading ? <CircularProgress size={24} /> : "Process"}
-          </Button>
-        </form>
-      </Container>
-      <Modal
-        title={`Results processed in ${processingTime}`}
-        open={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
-        width="100%"
-        style={{
-          top: 20,
-          maxWidth: '90vw',
-          margin: '0 auto'
-        }}
-        footer={[
-          <Button
-            key="close"
-            variant="contained"
-            color="error"
-            onClick={() => setIsModalVisible(false)}
-          >
-            Close
-          </Button>
-        ]}
-      >
-        <Table
-          dataSource={resultData}
-          columns={columns}
-          pagination={false}
-          rowKey={(record, index) => index}
-          scroll={{ y: 'calc(100vh - 250px)', x: true }}
-        />
-      </Modal>
-=======
-=======
->>>>>>> Stashed changes
             <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#333333" }}>
               SOC Engine
             </Typography>
@@ -981,6 +628,15 @@ export default function Tool2Page() {
                       padding: "8px",
                     }}
                   />
+                  <Tooltip
+                    title={
+                      <>
+                        Kindly provide any control ID in the Section 4 of the SOC2 Report to be mapped.
+                      </>
+                    }
+                  >
+                    <InfoIcon sx={{ cursor: "pointer" }} />
+                  </Tooltip>
                 </Box>
               </Grid>
 
@@ -1268,12 +924,7 @@ export default function Tool2Page() {
             )}
           </div>
         </Modal>
-
       </Box>
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     </Box>
   );
 }
