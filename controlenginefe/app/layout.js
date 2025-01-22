@@ -1,8 +1,8 @@
 // /app/layout.js
 import Navbar from './components/Navbar';
 export const metadata = {
-  title: 'EY Cybersec Tools',
-  description: 'AI tools for Cybersecurity operations',
+  title: 'AI Engine',
+  description: 'AI tools to Make Your Life Easier',
 };
 
 export default function RootLayout({ children }) {
