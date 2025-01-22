@@ -361,11 +361,17 @@ import { styled } from "@mui/system";
 import UploadIcon from "@mui/icons-material/Upload";
 import DeleteIcon from "@mui/icons-material/Delete";
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { styled } from "@mui/system";
 import { Modal, Table } from "antd"; // Removed Input from here
 import { Input } from "antd"; // Added separate Input import
 import InfoIcon from "@mui/icons-material/Info";
 import Tooltip from "@mui/material/Tooltip";
+=======
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline"; // For the reopen modal button
+import { Modal, Table } from "antd";
+import * as XLSX from "xlsx";
+>>>>>>> Stashed changes
 =======
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline"; // For the reopen modal button
 import { Modal, Table } from "antd";
@@ -544,10 +550,13 @@ export default function Tool1Page() {
 
       const result = await response.json();
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
       setResultData(result.data);
       setProcessingTime(result.processing_time);
 =======
+=======
+>>>>>>> Stashed changes
       setResultData(result.data || []);
       setProcessingTime(result.processing_time || "");
 
@@ -562,6 +571,9 @@ export default function Tool1Page() {
         setDownloadFilename(filename || "output.xlsx");
       }
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
       setIsModalVisible(true);
     } catch (error) {
@@ -574,6 +586,7 @@ export default function Tool1Page() {
 
   // ------------------- Download Handler -------------------
   const handleDownload = () => {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
     const link = document.createElement("a");
     link.href = "http://127.0.0.1:5000/download/framework1_with_results.csv";
@@ -634,6 +647,18 @@ export default function Tool1Page() {
           },
   ];
 
+=======
+    if (!downloadUrl) {
+      alert("Download URL is not available.");
+      return;
+    }
+
+    // Open the download URL in a new tab
+    window.open(downloadUrl, "_blank");
+  };
+
+  // ------------------- Top-K Handlers -------------------
+>>>>>>> Stashed changes
 =======
     if (!downloadUrl) {
       alert("Download URL is not available.");
@@ -712,6 +737,7 @@ export default function Tool1Page() {
             }}
           >
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             <Typography variant="h9">Top-K Value:</Typography>
             <Tooltip
               title={
@@ -758,6 +784,11 @@ export default function Tool1Page() {
             >
               +
             </Button>
+=======
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#333333" }}>
+              Controls Engine
+            </Typography>
+>>>>>>> Stashed changes
 =======
             <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#333333" }}>
               Controls Engine
@@ -1000,9 +1031,12 @@ export default function Tool1Page() {
           }}
           footer={[
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             <Button key="download" variant="contained" onClick={handleDownload}>
               Download as CSV
 =======
+=======
+>>>>>>> Stashed changes
             <Button key="download" variant="contained" onClick={handleDownload} disabled={!downloadUrl}>
               Download Excel
 >>>>>>> Stashed changes
@@ -1018,6 +1052,7 @@ export default function Tool1Page() {
           ]}
         >
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           <Table
             dataSource={resultData}
             columns={columns}
@@ -1029,6 +1064,8 @@ export default function Tool1Page() {
             }}
           />
 =======
+=======
+>>>>>>> Stashed changes
           <Typography variant="body2" sx={{ mb: 3, color: "#555555" }}>
             Below is a preview of the results. To view the interactive Pivot Table,
             please download the Excel file.
@@ -1049,6 +1086,9 @@ export default function Tool1Page() {
               No data available to display.
             </Typography>
           )}
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         </Modal>
       </Box>

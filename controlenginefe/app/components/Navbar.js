@@ -7,6 +7,9 @@ import styles from './Navbar.module.css'; // Import CSS module for custom styles
 import Link from "next/link";
 import { usePathname } from "next/navigation"; 
 import styles from "./Navbar.module.css";
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 const Navbar = () => {
@@ -102,6 +105,9 @@ const Navbar = () => {
           />
         </div>
       </Link>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     </nav>
   );

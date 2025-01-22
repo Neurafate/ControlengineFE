@@ -1,6 +1,11 @@
 "use client";
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { useState } from "react";
+=======
+
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
+>>>>>>> Stashed changes
 =======
 
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
@@ -24,11 +29,15 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 } from "@mui/material";
 import { styled } from "@mui/system";
 import UploadIcon from "@mui/icons-material/Upload";
 import DeleteIcon from "@mui/icons-material/Delete";
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 import { styled } from "@mui/system";
 import { Modal, Table, Input } from "antd";
@@ -119,6 +128,24 @@ const YellowRadio = styled(Radio)({
 });
 >>>>>>> Stashed changes
 
+=======
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline"; // For the reopen modal button
+import { Modal, Table, Input } from "antd";
+import * as XLSX from "xlsx";
+
+// ------------------- Styled Components -------------------
+const StyledInput = styled("input")({
+  display: "none",
+});
+
+const YellowRadio = styled(Radio)({
+  color: "#FFD700",
+  "&.Mui-checked": {
+    color: "#FFD700",
+  },
+});
+
+>>>>>>> Stashed changes
 // ------------------- Reusable Components -------------------
 /**
  * FileUpload Component
@@ -338,6 +365,9 @@ export default function Tool2Page() {
     setProcessingTime("Initializing...");
     setTotalTime(null); // Reset total time
     setStartTime(Date.now()); // Set the start time
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
     // Build form data
@@ -402,12 +432,15 @@ export default function Tool2Page() {
     }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     // Simulate API call delay
     setTimeout(() => {
       setResultData(dummyData);
       setProcessingTime("2.3 seconds");
       setIsModalVisible(true);
 =======
+=======
+>>>>>>> Stashed changes
   // ------------------- SSE for Progress Updates -------------------
   useEffect(() => {
     if (taskId) {
@@ -542,6 +575,9 @@ export default function Tool2Page() {
       alert(
         "Task finished, but could not parse the returned .xlsx. Please open it in Excel."
       );
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
       setLoading(false);
     }, 2000);
@@ -590,6 +626,46 @@ export default function Tool2Page() {
   };
 >>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
+=======
+  // ------------------- Handle Cancel -------------------
+  const handleCancel = async () => {
+    if (!taskId) return; // Ensure we have a valid taskId
+
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/cancel_task/${taskId}`, {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(`Error cancelling task: ${errorData.error}`);
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data.message);
+    } catch (error) {
+      console.error("Error cancelling the task:", error);
+      alert("An error occurred while cancelling the task.");
+    }
+
+    // Locally reset state on the frontend
+    setLoading(false);
+    setProgress(0);
+    setEta(null);
+    setTaskId(null);
+    setProcessingTime("Task cancelled.");
+    setDownloadUrl(null);
+    setResultData([]);
+    setTotalTime(null); // Reset total time on cancel
+    setStartTime(null); // Reset start time on cancel
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+    }
+  };
+
+>>>>>>> Stashed changes
   // ------------------- Render -------------------
   return (
     <Box
@@ -627,6 +703,7 @@ export default function Tool2Page() {
           paddingY: "2rem",
         }}
       >
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
         <Typography variant="h4" gutterBottom>
           SOC Mapper
@@ -757,6 +834,9 @@ export default function Tool2Page() {
 =======
         <Container
 >>>>>>> Stashed changes
+=======
+        <Container
+>>>>>>> Stashed changes
             sx={{
               backgroundColor: "rgba(255, 255, 255, 0.95)", // Slightly transparent to blend with background
               marginTop: "15rem", // Add top margin to avoid overlapping with navbar
@@ -779,6 +859,7 @@ export default function Tool2Page() {
               textAlign: "center",
             }}
           >
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
             {loading ? <CircularProgress size={24} /> : "Process"}
           </Button>
@@ -814,6 +895,8 @@ export default function Tool2Page() {
         />
       </Modal>
 =======
+=======
+>>>>>>> Stashed changes
             <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#333333" }}>
               SOC Engine
             </Typography>
@@ -1187,6 +1270,9 @@ export default function Tool2Page() {
         </Modal>
 
       </Box>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     </Box>
   );
